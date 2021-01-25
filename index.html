@@ -1,11 +1,91 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML><html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Web page</title>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-    
+	<header>
+		<div class""logotipo">
+			<img src="/img/biosenlogo.png" width="70" alt="Logotipo">
+		</div>
+		<nav>
+			<ul>
+				<li><a href="#">Inicio</a></li>
+				<li><a href="#">Electrónica</a></li>
+				<li><a href="#">Aplicación</a></li>
+				<li><a href="#">Acerca de BIOSEN</a></li>
+			</ul>
+		</nav>	
+	</header>
+	
+	<section class="main">
+		<section class="grafico">
+			<article>
+				<h2>Titulo de nuestra pagina</h2>
+				<p>Inicio: contiene la información de nuestra empresa, producto y área de trabajo, junto
+				el nombre de la enfermedad que detecta nuestro dispositivo.</p>
+			</article>
+			<div id="chart-adc" class="container"></div>
+		</section>
+		
+		<aside class="datos">
+			<h2>Datos del registro</h2>
+			<p>Inicio: contiene la información de nuestra empresa, producto y área de trabajo, junto
+			el nombre de la enfermedad que detecta nuestro dispositivo.</p>
+		</aside>
+	</section>
+	
+	<footer>
+		<p>BIOSEN - UNS</p>
+	</footer>
 </body>
-</html>
+
+<script>
+	Highcharts.setOptions({
+	global: {
+	useUTC: false
+	}
+	});
+var chartA = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-adc' },
+  title: { text: 'ADC' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#059e8a' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    title: { text: 'Valor ADC' }
+    //title: { text: 'Temperature (Fahrenheit)' }
+  },
+  credits: { enabled: false }
+});
+setInterval(function ( ) {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      var x = (new Date()).getTime(),
+          y = parseFloat(this.responseText);
+      //console.log(this.responseText);
+      if(chartA.series[0].data.length > 40) {
+        chartA.series[0].addPoint([x, y], true, true, true);
+      } else {
+        chartA.series[0].addPoint([x, y], true, false, true);
+      }
+    }
+  };
+  xhttp.open("GET", "/adc", true);
+  xhttp.send();
+}, 5000 ) ;
+</script>
